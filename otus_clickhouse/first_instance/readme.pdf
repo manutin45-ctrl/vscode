@@ -1,0 +1,59 @@
+1. Установил ClickHouse локально в Docker образе
+2. Примонтировал локальные файлы user.xml и config.xml в директории users.d и config.d соответственно
+3. Загрузил тестовый датасет Ньюркского такси из документации ClickHouse (nyc_taxi.trips_small)
+4. Выполнил запрос: select count(*) from nyc_taxi.trips_small where payment_type = 1
+5. Получил результат: 1850287 строк
+6. Произвел нагрузочное тестирование с помощью кода для базовых парамнтров:
+docker exec -it clickhouse-server clickhouse-benchmark \
+  --host=localhost \
+  --user=default \
+  --password=******************
+  --query="SELECT count() FROM nyc_taxi.trips_small" \
+  --iterations=100
+  Получил результат:
+  Loaded 1 queries.
+
+Queries executed: 100 (100%).
+
+localhost:9000, queries: 100, QPS: 660.734, RPS: 660.734, MiB/s: 0.010, result RPS: 660.734, result MiB/s: 0.005.
+
+0%              0.000 sec.
+10%             0.000 sec.
+20%             0.000 sec.
+30%             0.000 sec.
+40%             0.000 sec.
+50%             0.000 sec.
+60%             0.000 sec.
+70%             0.000 sec.
+80%             0.000 sec.
+90%             0.000 sec.
+95%             0.000 sec.
+99%             0.001 sec.
+99.9%           0.001 sec.
+99.99%          0.001 sec.
+
+Далее изменил настройки сервера:
+            <max_threads>8</max_threads> --- Максимум 8 потоков на один SELECT (2 на ядро) так как по умолчанию стоит 10, то есть отдаю ClickHouse 4 ядра, так как на машине всего 8 ядер
+            <max_memory_usage>4294967296</max_memory_usage> --- -- Один запрос не может занять больше 4 ГБ (оставляем место под кэш и мерджи)
+Получил результат:
+
+Loaded 1 queries.
+
+Queries executed: 100 (100%).
+
+localhost:9000, queries: 100, QPS: 671.636, RPS: 671.636, MiB/s: 0.010, result RPS: 671.636, result MiB/s: 0.005.
+
+0%              0.000 sec.
+10%             0.000 sec.
+20%             0.000 sec.
+30%             0.000 sec.
+40%             0.000 sec.
+50%             0.000 sec.
+60%             0.000 sec.
+70%             0.000 sec.
+80%             0.000 sec.
+90%             0.000 sec.
+95%             0.000 sec.
+99%             0.000 sec.
+99.9%           0.001 sec.
+99.99%          0.001 sec.
