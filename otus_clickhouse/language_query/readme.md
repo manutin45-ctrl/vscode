@@ -15,24 +15,30 @@
     DateTime_Insert Datetime Default now()
     )
     engine = MergeTree
+    [2](2.png)
 3. INSERT: 
         INSERT INTO restaruant.menu
         (name, weight, weight_meet, author, `date`)
         VALUES('cesar', 320, 90, 'chef', today())
+        [3](3.png)
     UPDATE:
         ALTER TABLE restaruant.menu 
         UPDATE weight_meet=110
         where name='cesar'
+        [4](4.png)
     DELETE:
         ALTER TABLE restaruant.menu DELETE 
         WHERE author='suchef'
+         [5](5.png)
 4. Добавляем поле в таблицу:
         ALTER TABLE restaruant.menu add column Remark Nullable(String)
+         [6](6.png)
     Удаляем существующее поле:
         ALTER TABLE restaruant.menu drop column Remark 
+        [7](7.png)
 5. Создаем тестовую таблицу:
 
-REATE TABLE nyc_taxi.trips_small_test
+CREATE TABLE nyc_taxi.trips_small_test
 (
 
     `trip_id` UInt32,
@@ -80,7 +86,7 @@ ORDER BY (pickup_datetime,
  dropoff_datetime)
 partition by toYYYYMMDD(pickup_datetime)
 SETTINGS index_granularity = 8192;
-
+ [8](8.png)
 
 Выбираем данные из источника на S3:
 
@@ -106,6 +112,7 @@ FROM s3(
     'https://datasets-documentation.s3.eu-west-3.amazonaws.com/nyc-taxi/trips_{0..2}.gz',
     'TabSeparatedWithNames'
 ) limit 100
+[9](9.png)
 
 Переливаем данные в созданную таблицу из источника:
 INSERT INTO nyc_taxi.trips_small_test 
@@ -131,6 +138,7 @@ FROM s3(
     'https://datasets-documentation.s3.eu-west-3.amazonaws.com/nyc-taxi/trips_{0..2}.gz',
     'TabSeparatedWithNames'
 );
+[10](10.png)
 
 Получаем список партиций в таблице:
 
@@ -140,13 +148,17 @@ WHERE database = 'nyc_taxi'
   AND table = 'trips_small_test'
   AND active = 1
 ORDER BY partition;
+[11](11.png)
 
 DETACH:
         ALTER TABLE nyc_taxi.trips_small_test DETACH PARTITION 20150701;
+        [12](12.png)
 ATTACH:
         ALTER TABLE nyc_taxi.trips_small_test ATTACH PARTITION 20150701;
+        [13](13.png)
 DROP: 
         ALTER TABLE nyc_taxi.trips_small_test  drop  PARTITION 20150702;
+        [14](14.png)
 Добавление данных партициями:
         ALTER TABLE nyc_taxi.trips_small_test  ATTACH PARTITION 20150701 FROM nyc_taxi.trips_small_test
-
+        [15](15.png)
