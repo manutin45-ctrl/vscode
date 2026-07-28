@@ -1,31 +1,42 @@
 1. Общий доход всех операций:
     select sum(quantity * price) FROM `default`.transactions;
+    [1](1.png)
 2. Средний доход с одной сделки
     select avg(quantity * price) FROM `default`.transactions;
+    [2](2.png)
 3. Общее количество проданной продукции
     select sum(quantity) FROM `default`.transactions;
+    [3](3.png)
 4. Количество уникальных пользователей
     select uniqExact(user_id) FROM `default`.transactions;
+    [4](4.png)
 
 
 2.1 Преобразовать дату в строку
     select toString(transaction_date) FROM `default`.transactions;
+    [5](5.png)
 2.2 Извлечь год и месяц
     select toString(toYYYYMM (transaction_date)) FROM `default`.transactions;
+    [6](6.png)
 2.3 Округлить price
     select round(price) FROM `default`.transactions;
+    [7](7.png)
 2.4 Преобразовать transaction_id в строку
     select toString(transaction_id) FROM `default`.transactions;
-
+    [8](8.png)
 
 3.1 Функция расчета общей стоимости
     create function full_price as (price, rate) -> price * rate;
+     [9](9.png)
 3.2 Использование созданной функции
     select *,full_price(quantity, price) FROM `default`.transactions;
+    [10](10.png)
 3.3 Cоздание функции классификации
     create function classificator as (price) -> if(price<100, 'малоценные','высокоценные')
+    [11](11.png)
 3.4 Вызов функции классификации
     select *,classificator( price) FROM `default`.transactions;
+    [12](12.png)
 
 2 Вариант
 
