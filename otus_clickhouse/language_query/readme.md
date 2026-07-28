@@ -1,4 +1,5 @@
 1. create database restaruant -- создание БД
+[1](1.png)
 2. create table restaruant.menu
     (
     name String comment 'Название блюда',
